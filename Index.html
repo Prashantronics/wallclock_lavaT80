@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>Lava T80 Wall Clock</title>
+
+<style>
+
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+
+    background:#000000;
+    color:#FFD700;
+
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.screen{
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:100%;
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+
+    text-align:center;
+}
+
+.active{
+    display:flex;
+}
+
+/* TIME SCREEN */
+
+.time{
+    font-size:38vw;
+    line-height:0.8;
+    font-weight:bold;
+}
+
+.ampm{
+    font-size:8vw;
+    color:#FFA500;
+}
+
+/* DAY SCREEN */
+
+.day{
+    font-size:15vw;
+    font-weight:bold;
+}
+
+.date{
+    margin-top:2vh;
+    font-size:12vw;
+}
+
+/* TEMP SCREEN */
+
+.temp{
+    font-size:30vw;
+    font-weight:bold;
+}
+
+/* TITHI SCREEN */
+
+.tithi{
+    font-size:18vw;
+    font-weight:bold;
+    color:#FFA500;
+}
+
+.debug{
+    position:absolute;
+
+    right:8px;
+    bottom:4px;
+
+    color:#404040;
+    font-size:14px;
+}
+
+.fade{
+    animation:fade 0.5s;
+}
+
+@keyframes fade{
+    from{opacity:0}
+    to{opacity:1}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- CLOCK -->
+
+<div id="clock"
+     class="screen active fade">
+
+    <div id="time"
+         class="time">
+         10:45
+    </div>
+
+    <div id="ampm"
+         class="ampm">
+         PM
+    </div>
+
+</div>
+
+<!-- DAY -->
+
+<div id="dayScreen"
+     class="screen fade">
+
+    <div id="weekday"
+         class="day">
+
+        WEDNESDAY
+
+    </div>
+
+    <div id="date"
+         class="date">
+
+        SEP 30
+
+    </div>
+
+</div>
+
+<!-- TEMP -->
+
+<div id="tempScreen"
+     class="screen fade">
+
+    <div id="temp"
+         class="temp">
+
+         29°C
+
+    </div>
+
+</div>
+
+<!-- TITHI -->
+
+<div id="tithiScreen"
+     class="screen fade">
+
+     <div id="tithi"
+          class="tithi">
+
+          EKADASHI
+
+     </div>
+
+</div>
+
+<div id="debug"
+     class="debug">
+</div>
+
+<script>
+
+/* ------------------- */
+
+function updateClock()
+{
+    let now = new Date();
+
+    let h = now.getHours();
+    let m = now.getMinutes();
+
+    let ampm =
+        h >= 12 ? "PM" : "AM";
+
+    h = h % 12;
+
+    if(h === 0)
+        h = 12;
+
+    document
+      .getElementById("time")
+      .innerHTML =
+      h + ":" +
+      String(m).padStart(2,'0');
+
+    document
+      .getElementById("ampm")
+      .innerHTML =
+      ampm;
+
+    document
+      .getElementById("weekday")
+      .innerHTML =
+      now.toLocaleDateString(
+          "en-US",
+          { weekday:"long" }
+      ).toUpperCase();
+
+    const month =
+      now.toLocaleDateString(
+          "en-US",
+          { month:"short" }
+      ).toUpperCase();
+
+    const day =
+      now.getDate();
+
+    document
+      .getElementById("date")
+      .innerHTML =
+      month + " " + day;
+
+    document
+      .getElementById("debug")
+      .innerHTML =
+      window.innerWidth +
+      " × " +
+      window.innerHeight;
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+/* ------------------- */
+/* SAMPLE PLACEHOLDERS */
+/* ------------------- */
+
+document
+.getElementById("temp")
+.innerHTML =
+"29°C";
+
+document
+.getElementById("tithi")
+.innerHTML =
+"EKADASHI";
+
+/* ------------------- */
+/* SCREEN ROTATION     */
+/* ------------------- */
+
+const screens =
+[
+    ["clock",10000],
+    ["dayScreen",5000],
+    ["tempScreen",5000],
+    ["tithiScreen",5000]
+];
+
+let current = 0;
+
+function showScreen(index)
+{
+    document
+    .querySelectorAll(".screen")
+    .forEach(
+      s => s.classList.remove("active")
+    );
+
+    document
+    .getElementById(
+      screens[index][0]
+    )
+    .classList.add("active");
+}
+
+function rotate()
+{
+    current++;
+
+    if(current >= screens.length)
+        current = 0;
+
+    showScreen(current);
+
+    setTimeout(
+      rotate,
+      screens[current][1]
+    );
+}
+
+setTimeout(
+    rotate,
+    screens[0][1]
+);
+
+</script>
+
+</body>
+</html>
